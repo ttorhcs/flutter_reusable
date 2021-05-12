@@ -84,7 +84,7 @@ TextFormField textFormTextWidget(String label, dynamic value, Function(dynamic) 
   );
 }
 
-enum TextWidgetInputType { INT, DOUBLE, STRING, LINES2, LINES3, LINES4, LINES5, LINES_5_FIX }
+enum TextWidgetInputType { INT, DOUBLE, STRING, LINES2, LINES3, LINES4, LINES5, LINES_5_FIX, EMAIL }
 
 List<TextInputFormatter> getFormatters(TextWidgetInputType inputType) {
   List<TextInputFormatter> rtn;
@@ -103,6 +103,9 @@ TextInputType getKeyboardType(TextWidgetInputType inputType) {
   }
   if (inputType == TextWidgetInputType.DOUBLE) {
     return TextInputType.number;
+  }
+  if (inputType == TextWidgetInputType.EMAIL) {
+    return TextInputType.emailAddress;
   }
   return null;
 }
