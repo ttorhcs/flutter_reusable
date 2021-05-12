@@ -17,7 +17,8 @@ TextFormField textFormTextWidget(String label, dynamic value, Function(dynamic) 
     passwordField = false,
     bool enabled = true,
     bool startWithFocus = false,
-    Function(String) onFieldSubmitted}) {
+    Function(String) onFieldSubmitted,
+    Key key}) {
   List<TextInputFormatter> inputFormatters = List.empty(growable: true);
   if (null != inputFormatter) {
     inputFormatters.add(inputFormatter);
@@ -48,6 +49,7 @@ TextFormField textFormTextWidget(String label, dynamic value, Function(dynamic) 
   }
 
   return TextFormField(
+    key: key,
     enabled: enabled,
     focusNode: focus,
     minLines: minLines,
@@ -199,7 +201,7 @@ insertSeparators(List<Widget> lst, {double height = 20, double width = 1, Color 
   }
 }
 
-Text text(String text, {String before, String after, bool addIfnull = false, int maxLines = 2, align = TextAlign.left, Color color, bool bold = false}) {
+Text text(String text, {String before, String after, bool addIfnull = false, int maxLines = 2, align = TextAlign.left, Color color, bool bold = false, TextStyle style}) {
   String _text = "";
   if (stringNotEmpty(text)) {
     _text = text;
@@ -211,16 +213,21 @@ Text text(String text, {String before, String after, bool addIfnull = false, int
   if (stringNotEmpty(after) && add) {
     _text = "$text$after";
   }
+
+  if(null == style){
+    style = TextStyle(
+      color: color,
+      fontWeight: bold ? FontWeight.bold : null,
+    );
+  }
+
   return Text(
     _text,
     overflow: TextOverflow.clip,
     softWrap: true,
     maxLines: maxLines,
     textAlign: align,
-    style: TextStyle(
-      color: color,
-      fontWeight: bold ? FontWeight.bold : null,
-    ),
+    style: style,
   );
 }
 
