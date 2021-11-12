@@ -10,23 +10,21 @@ import 'package:rflutter_alert/rflutter_alert.dart';
 ///If [TextWidgetInputType] is numeric a Numerical keyboard given
 TextFormField textFormTextWidget(String label, dynamic value, Function(dynamic) onChanged, Function(String) validator,
     {TextWidgetInputType inputType,
-    FocusNode focus,
-    TextInputFormatter inputFormatter,
-    TextEditingController controller,
-    String hintText = "",
-    passwordField = false,
-    bool enabled = true,
-    bool startWithFocus = false,
-    Function(String) onFieldSubmitted,
-    Key key}) {
-  List<TextInputFormatter> inputFormatters = List.empty(growable: true);
+      FocusNode focus,
+      TextInputFormatter inputFormatter,
+      TextEditingController controller,
+      String hintText = "",
+      passwordField = false,
+      bool enabled = true,
+      bool startWithFocus = false,
+      Function(String) onFieldSubmitted,
+      Key key}) {
+  List<TextInputFormatter> inputFormatters = [];
   if (null != inputFormatter) {
     inputFormatters.add(inputFormatter);
-    List<TextInputFormatter> others = getFormatters(inputType);
-    if (others != null) {
-      inputFormatters.addAll(others);
-    }
   }
+  inputFormatters.addAll(getFormatters(inputType));
+
   int lines = 1;
   int minLines = 1;
   switch (inputType) {
@@ -55,8 +53,7 @@ TextFormField textFormTextWidget(String label, dynamic value, Function(dynamic) 
     minLines: minLines,
     maxLines: lines,
     autofocus: startWithFocus,
-    controller: controller != null ? controller : TextEditingController()
-      ..value = TextEditingValue(text: (value != null ? "$value" : ""), selection: TextSelection.collapsed(offset: (value != null ? "$value".length : 0))),
+    controller: controller != null ? controller : TextEditingController.fromValue(TextEditingValue(text: ("${value ?? ""}"),selection: TextSelection.collapsed(offset: (value != null ? "${value ?? ""}".length : 0)))),
     decoration: InputDecoration(
       labelText: label,
       hintText: hintText,
@@ -87,12 +84,14 @@ TextFormField textFormTextWidget(String label, dynamic value, Function(dynamic) 
 enum TextWidgetInputType { INT, DOUBLE, STRING, LINES2, LINES3, LINES4, LINES5, LINES_5_FIX, EMAIL }
 
 List<TextInputFormatter> getFormatters(TextWidgetInputType inputType) {
-  List<TextInputFormatter> rtn;
+  List<TextInputFormatter> rtn = [];
   if (inputType == TextWidgetInputType.INT) {
-    rtn = List.empty(growable: true)..add(FilteringTextInputFormatter.digitsOnly);
+    rtn = List.empty(growable: true)
+      ..add(FilteringTextInputFormatter.digitsOnly);
   }
   if (inputType == TextWidgetInputType.DOUBLE) {
-    rtn = List.empty(growable: true)..add(DecimalTextInputFormatter(decimalRange: 2));
+    rtn = List.empty(growable: true)
+      ..add(DecimalTextInputFormatter(decimalRange: 2));
   }
   return rtn;
 }
@@ -117,20 +116,17 @@ SizedBox fieldSpacing({double sizeHV = 5}) {
   );
 }
 
-Future<bool> showYesNoAlert(
-    BuildContext context,
+Future<bool> showYesNoAlert(BuildContext context,
     String title,
     String desc,
     String okTitle,
-    String noTitle,
-    ) async {
+    String noTitle,) async {
   List<DialogButton> buttons = List.empty(growable: true)
     ..add(DialogButton(
       color: Colors.black.withOpacity(0.1),
       child: Text(okTitle),
       onPressed: () => Navigator.of(context).pop(true),
-    ))
-    ..add(DialogButton(
+    ))..add(DialogButton(
       color: Colors.black26.withOpacity(0.1),
       child: Text(noTitle),
       onPressed: () => Navigator.of(context).pop(false),
@@ -138,41 +134,43 @@ Future<bool> showYesNoAlert(
   return Alert(context: context, title: title, desc: desc, buttons: buttons).show();
 }
 
-Future<bool> showAlert(
-    BuildContext context,
+Future<bool> showAlert(BuildContext context,
     String title,
     Widget content,
-    String okTitle,
-    ) async {
+    String okTitle,) async {
   List<DialogButton> buttons = List.empty(growable: true)
     ..add(DialogButton(
       color: Colors.black.withOpacity(0.1),
       child: Text(okTitle),
       onPressed: () => Navigator.of(context).pop(true),
     ));
-  return Alert(style: AlertStyle(overlayColor: Colors.black12), context: context, title: title, content: content, buttons: buttons, closeFunction: () => true)
+  return Alert(style: AlertStyle(overlayColor: Colors.black12),
+      context: context,
+      title: title,
+      content: content,
+      buttons: buttons,
+      closeFunction: () => Navigator.of(context).pop(false))
       .show();
 }
 
-showErrorAlert(
-    BuildContext context,
+showErrorAlert(BuildContext context,
     String title,
-    String desc,
-    ) {
-  List<DialogButton> buttons = []
-    ..add(DialogButton(
-      color: Colors.black.withOpacity(0.1),
-      child: Text("Hiba másolása a vágólapra"),
-      onPressed: () => Clipboard.setData(ClipboardData(text: desc)),
-    ))
-    ..add(DialogButton(
-      color: Colors.black26.withOpacity(0.1),
-      child: Text("Bezárás"),
-      onPressed: () => Navigator.of(context).pop(false),
-    ));
+    String desc,) {
+  List<DialogButton> buttons = []..add(DialogButton(
+    color: Colors.black.withOpacity(0.1),
+    child: Text("Hiba másolása a vágólapra"),
+    onPressed: () => Clipboard.setData(ClipboardData(text: desc)),
+  ))..add(DialogButton(
+    color: Colors.black26.withOpacity(0.1),
+    child: Text("Bezárás"),
+    onPressed: () => Navigator.of(context).pop(false),
+  ));
 
   Widget content = Container(
-    height: MediaQuery.of(context).size.height - 200,
+    height: MediaQuery
+        .of(context)
+        .size
+        .height - 200,
     child: SingleChildScrollView(
       child: Text(
         desc,
@@ -181,7 +179,11 @@ showErrorAlert(
     ),
   );
 
-  return Alert(context: context, title: title, content: content, buttons: buttons, closeFunction: () => "").show();
+  return Alert(context: context,
+      title: title,
+      content: content,
+      buttons: buttons,
+      closeFunction: () => "").show();
 }
 
 insertSeparators(List<Widget> lst, {double height = 20, double width = 1, Color color = Colors.black26}) {
@@ -204,20 +206,21 @@ insertSeparators(List<Widget> lst, {double height = 20, double width = 1, Color 
   }
 }
 
-Text text(String text, {String before, String after, bool addIfnull = false, int maxLines = 2, align = TextAlign.left, Color color, bool bold = false, TextStyle style}) {
+Text text(String text,
+    {String before, String after, bool addIfnull = false, int maxLines = 2, align = TextAlign.left, Color color, bool bold = false, TextStyle style}) {
   String _text = "";
   if (stringNotEmpty(text)) {
     _text = text;
   }
   bool add = stringNotEmpty(text) || addIfnull;
-  if (stringNotEmpty(before) && add) {
+  if (before != null && add) {
     _text = "$before$_text";
   }
-  if (stringNotEmpty(after) && add) {
+  if (after != null && add) {
     _text = "$text$after";
   }
 
-  if(null == style){
+  if (null == style) {
     style = TextStyle(
       color: color,
       fontWeight: bold ? FontWeight.bold : null,
@@ -255,10 +258,13 @@ Widget buttonGreen(String label, Function onTap) {
   return buttonWithColor(label, onTap, Colors.green.withAlpha(100));
 }
 
-Widget buttonWithColor(String label, Function onTap, Color color, {double paddingH = 100, double paddingV = 50}) {
+Widget buttonWithColor(String label, Function onTap, Color color,
+    {double paddingH: 50, double paddingV: 25, Color textColor: Colors.black, double fontSize: 15, isBold: false}) {
   return InkWell(
     hoverColor: Colors.black12,
-    child: Container(color: color, padding: EdgeInsets.symmetric(horizontal: paddingH, vertical: paddingV), child: text(label)),
+    child: Container(color: color,
+        padding: EdgeInsets.symmetric(horizontal: paddingH, vertical: paddingV),
+        child: text(label, color: textColor, style: TextStyle(color: textColor, fontSize: fontSize, fontWeight: isBold ? FontWeight.bold : null))),
     onTap: onTap,
   );
 }
