@@ -53,7 +53,8 @@ TextFormField textFormTextWidget(String label, dynamic value, Function(dynamic) 
     minLines: minLines,
     maxLines: lines,
     autofocus: startWithFocus,
-    controller: controller != null ? controller : TextEditingController.fromValue(TextEditingValue(text: ("${value ?? ""}"),selection: TextSelection.collapsed(offset: (value != null ? "${value ?? ""}".length : 0)))),
+    controller: controller != null ? controller : TextEditingController.fromValue(
+        TextEditingValue(text: ("${value ?? ""}"), selection: TextSelection.collapsed(offset: (value != null ? "${value ?? ""}".length : 0)))),
     decoration: InputDecoration(
       labelText: label,
       hintText: hintText,
@@ -78,6 +79,7 @@ TextFormField textFormTextWidget(String label, dynamic value, Function(dynamic) 
     keyboardType: getKeyboardType(inputType),
     obscureText: passwordField,
     onFieldSubmitted: onFieldSubmitted,
+    onSaved: onFieldSubmitted,
   );
 }
 
@@ -224,12 +226,12 @@ Text text(String text,
     style = TextStyle(
       color: color,
       fontWeight: bold ? FontWeight.bold : null,
+      overflow: TextOverflow.ellipsis,
     );
   }
 
   return Text(
     _text,
-    overflow: TextOverflow.clip,
     softWrap: true,
     maxLines: maxLines,
     textAlign: align,
@@ -259,14 +261,28 @@ Widget buttonGreen(String label, Function onTap) {
 }
 
 Widget buttonWithColor(String label, Function onTap, Color color,
-    {double paddingH: 50, double paddingV: 25, Color textColor: Colors.black, double fontSize: 15, isBold: false}) {
-  return InkWell(
+    {double paddingH: 50, double paddingV: 25, Color textColor: Colors.black, double fontSize: 15, isBold: false, borderColor: Colors.transparent,
+      isExpanded: false}) {
+  Widget rtn = InkWell(
     hoverColor: Colors.black12,
-    child: Container(color: color,
-        padding: EdgeInsets.symmetric(horizontal: paddingH, vertical: paddingV),
-        child: text(label, color: textColor, style: TextStyle(color: textColor, fontSize: fontSize, fontWeight: isBold ? FontWeight.bold : null))),
+    child: Container(
+      padding: isExpanded ? null : EdgeInsets.symmetric(horizontal: paddingH, vertical: paddingV),
+      decoration: BoxDecoration(
+        border: Border.all(color: borderColor, width: 1),
+        borderRadius: BorderRadius.circular(5),
+        color: color,
+      ),
+      child:
+          Center(
+                child: text(label, color: textColor, style: TextStyle(color: textColor, fontSize: fontSize, fontWeight: isBold ? FontWeight.bold : null))),
+    ),
     onTap: onTap,
   );
+  if (isExpanded) {
+    rtn = Expanded(child: rtn);
+  }
+  return
+    rtn;
 }
 
 Widget dividerV({Color color = Colors.black26, double thickness = 1, double height = 10, double margin = 3}) {
@@ -274,6 +290,7 @@ Widget dividerV({Color color = Colors.black26, double thickness = 1, double heig
     width: 10.0,
     child: new Center(
       child: new Container(
+        height: height,
         margin: new EdgeInsetsDirectional.only(top: margin, bottom: margin),
         width: 1.0,
         color: color,

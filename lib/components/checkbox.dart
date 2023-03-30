@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_reusable/widget_builder.dart';
+import 'package:flutter_reusable/components/widget_builder.dart';
 
 class CheckboxWidget extends StatefulWidget {
   final String label;
